@@ -27,12 +27,12 @@ Tree Classifier is a web application built using **Flask** as the backend and **
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/Tree-Classifier.git
+   git clone https://github.com/sudasun007/Tree_Classifier.git
    ```
 
 2. Navigate to the project directory:
    ```bash
-   cd Tree-Classifier
+   cd Tree_Classifier
    ```
 
 3. Create a virtual environment (optional but recommended):
@@ -69,9 +69,6 @@ Tree Classifier is a web application built using **Flask** as the backend and **
 
 ## Contributing
 Feel free to fork the repository, submit issues, and contribute improvements to the codebase. Please make sure to follow the contributing guidelines when submitting pull requests.
-
-## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 - The TensorFlow model used for classification was trained using plant leaf data.
