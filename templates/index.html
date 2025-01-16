@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tree Classifier</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body class="bg-gradient-to-r from-green-300 to-blue-500 text-gray-900 min-h-screen flex items-center justify-center">
+    <div class="container mx-auto px-4">
+        <div class="bg-white shadow-xl rounded-3xl p-10 max-w-lg mx-auto transform hover:scale-105 transition-transform duration-300">
+            <h1 class="text-4xl font-extrabold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-green-500">
+                Tree Classifier 🌳
+            </h1>
+            <form id="treeForm" class="space-y-6">
+                <div class="relative group">
+                    <label for="rachisLength" class="block text-sm font-medium text-gray-700 transition-colors group-hover:text-blue-500">
+                        Rachis Length
+                    </label>
+                    <input type="number" id="rachisLength" step="any" class="mt-2 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300 outline-none group-hover:border-blue-400" required>
+                </div>
+                <div class="relative group">
+                    <label for="width" class="block text-sm font-medium text-gray-700 transition-colors group-hover:text-green-500">
+                        Width
+                    </label>
+                    <input type="number" id="width" step="any" class="mt-2 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-green-400 focus:border-green-400 transition-all duration-300 outline-none group-hover:border-green-400" required>
+                </div>
+                <div class="relative group">
+                    <label for="length" class="block text-sm font-medium text-gray-700 transition-colors group-hover:text-yellow-500">
+                        Length
+                    </label>
+                    <input type="number" id="length" step="any" class="mt-2 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-yellow-400 focus:border-yellow-400 transition-all duration-300 outline-none group-hover:border-yellow-400" required>
+                </div>
+                <div class="relative group">
+                    <label for="pairOfLeaves" class="block text-sm font-medium text-gray-700 transition-colors group-hover:text-purple-500">
+                        Pair of Leaves
+                    </label>
+                    <input type="number" id="pairOfLeaves" class="mt-2 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-purple-400 focus:border-purple-400 transition-all duration-300 outline-none group-hover:border-purple-400" required>
+                </div>
+                <button type="submit" class="bg-gradient-to-r from-blue-500 to-green-500 text-white font-bold py-3 px-6 rounded-full shadow-lg w-full transform hover:scale-105 hover:shadow-xl transition-all duration-300">
+                    Predict
+                </button>
+            </form>
+            <div id="result" class="mt-8 text-center text-lg font-semibold hidden"></div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('treeForm');
+        const resultDiv = document.getElementById('result');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Get values and convert to numbers (with handling for commas in decimal)
+            const rachisLength = parseFloat(document.getElementById('rachisLength').value.replace(',', '.'));
+            const width = parseFloat(document.getElementById('width').value.replace(',', '.'));
+            const length = parseFloat(document.getElementById('length').value.replace(',', '.'));
+            const pairOfLeaves = parseInt(document.getElementById('pairOfLeaves').value, 10);
+
+            // Debugging: Check if all values are valid numbers
+            console.log("Rachis Length:", rachisLength, "Width:", width, "Length:", length, "Pair of Leaves:", pairOfLeaves);
+
+            // Ensure that inputs are valid numbers
+            if (isNaN(rachisLength) || isNaN(width) || isNaN(length) || isNaN(pairOfLeaves)) {
+                resultDiv.textContent = '⚠️ Please enter valid numeric values for all fields (numbers only).';
+                resultDiv.classList.remove('hidden');
+                gsap.fromTo(resultDiv, { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 1 });
+                return;  // Prevent form submission if input is invalid
+            }
+
+            resultDiv.classList.add('hidden'); // Hide result while processing
+
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    "Rachis Length": rachisLength,
+                    "Width": width,
+                    "Length": length,
+                    "Pair of Leaves": pairOfLeaves
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.predicted_class) {
+                resultDiv.textContent = `🌱 Predicted Class: ${result.predicted_class} (Confidence: ${result.confidence})`;
+                resultDiv.classList.remove('hidden');
+                gsap.fromTo(resultDiv, { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 1 });
+            } else {
+                resultDiv.textContent = `⚠️ Error: ${result.error}`;
+                resultDiv.classList.remove('hidden');
+                gsap.fromTo(resultDiv, { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 1 });
+            }
+        });
+    </script>
+</body>
+</html>
